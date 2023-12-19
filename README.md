@@ -10,8 +10,7 @@ Then Run Virtual Environment
     - Then run the environment again Set-ExecutionPolicy Restricted
 
 Then install Django and other dependencies
-  - pip install Django
-  
+  pip install -r requirements.txt  (this file is inside VideoCollect folder)
 
 
 
