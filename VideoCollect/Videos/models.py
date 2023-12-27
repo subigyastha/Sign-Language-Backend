@@ -15,21 +15,14 @@ class Dictionary(models.Model):
     def __str__(self):
         return self.name
 
-@receiver(pre_save, sender=Dictionary)
 def pre_save_dictionary(sender, instance, **kwargs):
-    # Check if the best_video field has changed
     if instance.pk:
         original_instance = Dictionary.objects.get(pk=instance.pk)
         if original_instance.best_video != instance.best_video:
-            # If it has changed, update is_best for the old best_video
+            # Uncheck is_best for the old best_video
             if original_instance.best_video:
                 original_instance.best_video.is_best = False
-                original_instance.best_video.save()
-
-            # Update is_best for the new best_video
-            if instance.best_video:
-                instance.best_video.is_best = True
-                instance.best_video.save()
+                original_instance.best_video.save(update_fields=['is_best'])
 
 
 def video_upload_path(instance, filename):
@@ -67,10 +60,6 @@ class SignVideo(models.Model):
 
 @receiver(post_save, sender=SignVideo)
 def update_num_videos(sender, instance, **kwargs):
-    """
-    Signal to update the num_videos field in the associated Dictionary model
-    after a SignVideo instance is saved.
-    """
     dictionary_name = instance.dictionary_name
     num_videos = SignVideo.objects.filter(dictionary_name=dictionary_name).count()
     Dictionary.objects.filter(id=dictionary_name.id).update(num_videos=num_videos)
@@ -80,4 +69,5 @@ def update_num_videos(sender, instance, **kwargs):
         instance.dictionary_name.best_video = instance
         # Uncheck is_best for any existing best video in the dictionary
         SignVideo.objects.filter(dictionary_name=dictionary_name, is_best=True).exclude(pk=instance.pk).update(is_best=False)
-        instance.dictionary_name.save()
+        instance.dictionary_name.save(update_fields=['best_video'])
+

@@ -25,7 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',video_views.index,name='index'),
     path('dictionary/list',video_views.dictionarylist,name='dictionary'),
+    path('dictionary/all',video_views.dictionaryview,name='dictionaryall'),
     path('dictionary/update',video_views.DictionaryUpdate.as_view(),name='dictionaryupdate'),
     path('sign/video/list',video_views.SignVideolist.as_view(),name='sign video'),
-      path('sign/upload/', video_views.SignVideoUpload.as_view(), name='signvideo-upload'),
+    path('sign/upload/', video_views.SignVideoUpload.as_view(), name='signvideo-upload'),
+    path('search/<str:query>/', video_views.SearchAPIView.as_view(), name='search-api'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
